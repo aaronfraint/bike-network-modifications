@@ -8,6 +8,9 @@ import makeMap from "./js/map.js";
 import sources from "./js/mapSources.js";
 import { layers, paint_props } from "./js/mapLayers.js";
 import handleModal from "./js/modal.js";
+
+import { sendPostToAPI, initialGeojsonLoad } from "./js/api.js";
+
 // add additional imports here (popups, forms, etc)
 
 const modal = document.getElementById("modal");
@@ -28,21 +31,6 @@ faviconLink.href = favicon;
 // map
 const map = makeMap();
 
-const reloadGeojson = (map, url) => {
-  // make a GET request to parse the GeoJSON at the url
-  // alert("Inside the reload block");
-  var request = new XMLHttpRequest();
-  request.open("GET", url, true);
-  request.onload = function () {
-    if (this.status >= 200 && this.status < 400) {
-      // retrieve the JSON from the response
-      var json = JSON.parse(this.response);
-      map.getSource("modified-links").setData(json);
-    }
-  };
-  request.send();
-};
-
 map.on("load", async () => {
   var base_layers = map.getStyle().layers;
   var firstSymbolId;
@@ -62,49 +50,7 @@ map.on("load", async () => {
       paint_props[p].style
     );
 
-  var url = "http://127.0.0.1:8000/modified-links/";
-  var request = new XMLHttpRequest();
-  // make a GET request to parse the GeoJSON at the url
-  request.open("GET", url, true);
-  request.onload = function () {
-    if (this.status >= 200 && this.status < 400) {
-      // retrieve the JSON from the response
-      var json = JSON.parse(this.response);
-
-      map.addSource("modified-links", {
-        type: "geojson",
-        data: json,
-      });
-      map.addLayer(
-        {
-          id: "links-that-were-modified",
-          type: "line",
-          source: "modified-links",
-          paint: {
-            "line-width": 8,
-            "line-color": {
-              property: "design",
-              default: "black",
-              stops: [
-                [0, "rgba(0, 0, 0, 0.4)"],
-                [1, "green"],
-                [2, "blue"],
-                [3, "yellow"],
-                [4, "orange"],
-                [5, "red"],
-                [6, "purple"],
-                [7, "magenta"],
-              ],
-            },
-            "line-opacity": 1,
-            "line-dasharray": [1, 0.5],
-          },
-        },
-        firstSymbolId
-      );
-    }
-  };
-  request.send();
+  initialGeojsonLoad(map, firstSymbolId);
 
   // let response = await fetch("http://127.0.0.1:8000/modified-links/");
 
@@ -146,31 +92,7 @@ map.on("load", async () => {
       ["in", "gid"]
     );
 
-    // Build the API URL
-    let apiUrl =
-      "https://lts-fastapi-c8pjh.ondigitalocean.app/network-update/?";
-    // let apiUrl = "http://127.0.0.1:8000/network-update/?";
-
-    // Add the link IDs
-    for (var i = 0; i < id_values.length; i++) {
-      if (i > 0) {
-        apiUrl += "&";
-      }
-      apiUrl += "q=" + id_values[i];
-    }
-
-    // Get the design selected by the user and add to the URL
-    var userDesign = document.getElementById("newbikedesign");
-
-    apiUrl += "&design=" + userDesign.value;
-
-    if (userDesign.value < 1) {
-      alert("Please select a design and reselect your segments");
-    } else {
-      map.setFilter("links-highlighted", filter);
-      // Send the POST request to the API
-      fetch(apiUrl, { method: "POST" }).then(() => reloadGeojson(map, url));
-    }
+    sendPostToAPI(id_values, map, filter);
   });
 });
 
