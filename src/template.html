@@ -68,23 +68,70 @@
       <div id="map"></div>
 
       <article id="sidebar">
-        <div id="sidebar-content">
-          <h2>Usage</h2>
+        <div id="sidebar-content" style="padding: 30px">
+          <h2>Purpose</h2>
+          <p>
+            DVRPC maintains a comprehensive bicycle network dataset for the
+            9-county region but has no formal process for collecting updates as
+            new bicycle facilities are installed.
+          </p>
+          <p>
+            This map is a proof-of-concept for a simple interface that allows
+            DVRPC staff and other planning partners to provide updates to the
+            regional bicycle network dataset.
+          </p>
+          <p>
+            The base bicycle network is shown with thin colored lines, and
+            modifications provided by users are shown with a black underline and
+            a thicker, dashed, colored line.
+          </p>
+          <h2>Directions</h2>
           <ul>
             <li>
               Select the bicycle facility type using the drop-down form below
             </li>
             <li>
               <select id="newbikedesign">
-                <option value="0">(no design selected)</option>
-                <option value="1">Protected Bike Path</option>
+                <option value="-1">(no design selected)</option>
+                <option value="1">Sharrows</option>
                 <option value="2">Standard Bike Lane</option>
-                <option value="3">Shared Lane</option>
-                <option value="4">Off-street Shared Use Path</option>
+                <option value="3">Buffered Bike Lane</option>
+                <option value="4">Off-street Trail/Path</option>
+                <option value="5">Bike Route</option>
+                <option value="6">Protected Bike Lane</option>
               </select>
             </li>
-            <li>Click on the box icon at left to begin drawing a polygon</li>
+            <li>
+              Click on the box icon at the top-right corner of the map to begin
+              drawing a polygon
+            </li>
+            <li>
+              Click as many times as needed to add vertex points to your polygon
+            </li>
             <li>Double-click to end your polygon</li>
+            <li style="font-style: italic">
+              ... the map will then send your design and selected links to the
+              API, and the map will refresh showing your edit with a black
+              outline ...
+            </li>
+          </ul>
+          <h3 style="padding-top: 10px">To Do</h3>
+          <ul style="font-size: 80%">
+            <li>
+              Hide app behind user log in to ensure it's only used by
+              DVRPC/planning partners
+            </li>
+            <li>
+              Log the name of the user who provided each edit into the database
+            </li>
+            <li>
+              Provide other form-based input options (i.e. text entry for notes,
+              datepicker for date implemented, etc.)
+            </li>
+            <li>
+              Allow modification of edits that were previously submitted (i.e.
+              allow users to fix over-selection mistakes, wrong design, etc.)
+            </li>
           </ul>
           <br />
         </div>
